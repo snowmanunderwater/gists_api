@@ -3,6 +3,7 @@
 import argparse
 import http.client
 import json
+import os.path
 import re
 import shlex
 import subprocess
@@ -10,7 +11,6 @@ import sys
 import urllib
 import urllib.parse
 import urllib.request
-import os.path
 
 with open('TOKEN', 'r') as t:
     TOKEN = t.read()
@@ -119,7 +119,6 @@ def createGists(files):
     # convert str to bytes (ensure encoding is OK)
     post_data = json_data.encode('utf-8')
 
-
     # we should also say the JSON content type header
     headers = {
         'Content-Type': 'application/json',
@@ -136,14 +135,11 @@ def createGists(files):
         print('Gist created!')
 
 
-
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('name')
     parser.add_argument('ARG', nargs='*')  # *args
     namespace = parser.parse_args(sys.argv[1:])
-
 
     # ====== Get a single gist ======
     # https://developer.github.com/v3/gists/#get-a-single-gist
