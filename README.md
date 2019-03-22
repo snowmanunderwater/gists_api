@@ -43,7 +43,7 @@ I am thinking of improvement.
 Examples
 --------
 
-* List all public gists.
+* List all gists of the specified user.
 
 ![list](https://github.com/snowmanunderwater/gists_api/blob/master/screenshots/list.png)
 
@@ -51,7 +51,7 @@ Examples
 
 ![create](https://github.com/snowmanunderwater/gists_api/blob/master/screenshots/create.png)
 
-* List public gists.
+* List public gists from all users.
 
 ![list](https://github.com/snowmanunderwater/gists_api/blob/master/screenshots/list_public.png)
 
