@@ -1,15 +1,16 @@
 # Github Gists API
-https://developer.github.com/v3/gists/
+## Control your gists from terminal.
+
 
 | API                               | Y\N | Implementation | Comment |
 |-----------------------------------|-----|----------------|---------|
-| List a user's gists               | +   | list USERNAME  |         |
+| List a user's gists               | +   | list           |         |
 | List all public gists             | -   |                |         |
 | List starred gists                | -   |                |         |
-| Get a single gist                 | +   | gist GIST_ID   |         |
+| Get a single gist                 | +   | gist           |         |
 | Get a specific revision of a gist | -   |                |         |
-| Create a gist                     | +   | create *files  |         |
-| Edit a gist                       | -   |                |         |
+| Create a gist                     | +   | create         |         |
+| Edit a gist                       | +   | edit           |         |
 | List gist commits                 | -   |                |         |
 | Star a gist                       | -   |                |         |
 | Unstar a gist                     | -   |                |         |
