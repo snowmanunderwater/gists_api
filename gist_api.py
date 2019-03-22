@@ -415,7 +415,7 @@ def forkGist(GIST_ID):
 # https://developer.github.com/v3/gists/#list-gist-forks
 def listGistForks(GIST_ID):
 
-    # FIXME: maybe API is not working properly, instead forks it response revisions
+    # TODO: page, per_page
 
     url = f'{BASE_URL}/gists/{GIST_ID}/forks'
     headers = {

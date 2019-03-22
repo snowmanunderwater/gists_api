@@ -26,7 +26,7 @@ API calls
 | Unstar a gist                     | +          | unstar         |
 | Check if a gist is starred        | +/-        | check          |
 | Fork a gist                       | +          | fork           |
-| List gist forks                   | +/-        | lgf            |
+| List gist forks                   | +          | lgf            |
 | Delete a gist                     | +          | delete         |
 
 
