@@ -391,8 +391,8 @@ def checkGistStarred(GIST_ID):
     except urllib.error.HTTPError:
         print('Unstarred (or ID is bad, check it)')
         return
-    
-    print('Starred!')
+    else:
+        print('Starred!')
 
 
 
