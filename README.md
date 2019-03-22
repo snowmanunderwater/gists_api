@@ -12,7 +12,7 @@ Features
 API calls
 ---------
 
-| API                               | Implement? | Implementation |
+| API                               | Implement? | Command        |
 |-----------------------------------|------------|----------------|
 | List a user's gists               | +          | list           |
 | List all public gists             | +          | lp             |
@@ -43,25 +43,17 @@ I am thinking of improvement.
 Examples
 --------
 
-List all public gists. Page 1, per page 2.
-``` bash
-    $ gist_api lp -pg 1 -pp 2
-    id:     0c2eaf12e4c50bb97f74afdfc5278001
-    url:    https://gist.github.com/0c2eaf12e4c50bb97f74afdfc5278001
-    desc:
-    files:  ['Docker-CheatSheet.md']
-    owner:  funkyremi
-    ===================
-    id:     ba57917f931db4da39a2209093717010
-    url:    https://gist.github.com/ba57917f931db4da39a2209093717010
-    desc:
-    files:  ['.gitconfig']
-    owner:  vloginov
-```
-
+* List all public gists.
 
 ![list](https://github.com/snowmanunderwater/gists_api/blob/master/screenshots/list.png)
 
+* Create gist.
+
+![create](https://github.com/snowmanunderwater/gists_api/blob/master/screenshots/create.png)
+
+* List public gists.
+
+![list](https://github.com/snowmanunderwater/gists_api/blob/master/screenshots/list_public.png)
 
 
 
@@ -69,6 +61,7 @@ List all public gists. Page 1, per page 2.
 Help
 ----
 
+```
 usage: gist_api [-h] [-id GIST_ID] [-u USERNAME] [-f [FILES [FILES ...]]]
                 [-d DESCRIPTION] [-p PUBLIC] [-s SINCE] [-pg PAGE]
                 [-pp PER_PAGE] [-sha SHA]
@@ -100,3 +93,4 @@ optional arguments:
   -pp PER_PAGE, --per_page PER_PAGE
                         Paginator: per page
   -sha SHA, --sha SHA   SHA of gist commit
+```
