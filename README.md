@@ -7,7 +7,7 @@ Features
 * Just one file
 * Python 3.6 support
 * 0 dependencies, vanilla Python 3
-* 6/14 oficial GitHub API calls with parameters
+* 7/14 oficial GitHub API calls with parameters
 * Customisation options
 
 
@@ -18,7 +18,7 @@ API calls
 |-----------------------------------|-----|----------------|
 | List a user's gists               | +   | list           |
 | List all public gists             | +   | lp             |
-| List starred gists                | -   |                |
+| List starred gists                | +   | starred        |
 | Get a single gist                 | +   | gist           |
 | Get a specific revision of a gist | -   |                |
 | Create a gist                     | +   | create         |

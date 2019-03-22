@@ -48,7 +48,7 @@ def getSingleGist(GIST_ID):
         `code -r .`
     """
 
-    # TODO: finalize output
+    # TODO: Add option selection
 
     try:
         r = urllib.request.urlopen(f'{BASE_URL}/gists/{GIST_ID}').read()
@@ -84,7 +84,7 @@ def getAllGists(USERNAME):
         ID:          0ba2b2a39f8f66caa5630549239f35a2
     """
 
-    # TODO: finalize output
+    # TODO: Add option selection
 
     try:
         r = urllib.request.urlopen(f'{BASE_URL}/users/{USERNAME}/gists').read()
@@ -224,8 +224,12 @@ def deleteGist(GIST_ID):
 # ====== List all public gists ======
 # https://developer.github.com/v3/gists/#list-all-public-gists
 def listPublicGists(since, page, per_page):
-    
-    r = urllib.request.urlopen(f'{BASE_URL}/gists/public?page={page}&per_page={per_page}').read()
+
+    # TODO: Implement since
+    # TODO: Add option selection
+
+    r = urllib.request.urlopen(
+        f'{BASE_URL}/gists/public?page={page}&per_page={per_page}').read()
     gists = json.loads(r.decode('utf-8'))
 
     for gist in gists:
@@ -234,12 +238,42 @@ def listPublicGists(since, page, per_page):
         gist_description = gist.get('description')
         gist_files = list(gist.get('files'))
         gist_owner = gist.get('owner').get('login')
-        
+        gist_comments = gist.get('comments')
+
         print('id:    ', gist_id)
         print('url:   ', gist_url)
         print('desc:  ', gist_description)
         print('files: ', gist_files)
         print('owner: ', gist_owner)
+        print('comments: ', gist_comments)
+        print('===================')
+
+
+# ====== List starred gists ======
+# https://developer.github.com/v3/gists/#list-starred-gists
+def listStarredGists(since):
+
+    # TODO: Implement since
+    # TODO: Add option selection
+
+    url = f'{BASE_URL}/gists/starred'
+    headers = {'Authorization': 'token ' + TOKEN}
+    req = urllib.request.Request(url, headers=headers, method='GET')
+    res = urllib.request.urlopen(req).read()
+
+    gists = json.loads(res.decode('utf-8'))
+    for gist in gists:
+        gist_id = gist.get('id')
+        gist_url = gist.get('html_url')
+        gist_description = gist.get('description')
+        gist_files = list(gist.get('files'))
+        gist_comments = gist.get('comments')
+
+        print('id:       ', gist_id)
+        print('url:      ', gist_url)
+        print('desc:     ', gist_description)
+        print('files:    ', gist_files)
+        print('comments: ', gist_comments)
         print('===================')
 
 
@@ -264,9 +298,17 @@ if __name__ == '__main__':
         type=str,
         default='yes',
         help='Gist status(public or private). Default is Public')
-    parser.add_argument('-s', '--since', type=str, help='This is a timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ. Only gists updated at or after this time are returned.')
-    parser.add_argument('-pg', '--page', type=int, default='1', help='Paginator: page')
-    parser.add_argument('-pp', '--per_page', type=int, default='3', help='Paginator: per page')
+    parser.add_argument(
+        '-s',
+        '--since',
+        type=str,
+        help=
+        'This is a timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ. Only gists updated at or after this time are returned.'
+    )
+    parser.add_argument(
+        '-pg', '--page', type=int, default='1', help='Paginator: page')
+    parser.add_argument(
+        '-pp', '--per_page', type=int, default='3', help='Paginator: per page')
 
     args = parser.parse_args()
 
@@ -306,6 +348,10 @@ if __name__ == '__main__':
     if args.name == 'lp':
         listPublicGists(args.since, args.page, args.per_page)
 
+    # ====== List starred gists ======
+    # https://developer.github.com/v3/gists/#list-starred-gists
+    if args.name == 'starred':
+        listStarredGists(args.since)
 
     # FIXME: when create gist, this prints
     else:
