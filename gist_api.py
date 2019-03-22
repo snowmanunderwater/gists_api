@@ -373,6 +373,32 @@ def unstarGist(GIST_ID):
         print('Unstarred!')
 
 
+# ====== Check if a gist is starred ======
+# https://developer.github.com/v3/gists/#check-if-a-gist-is-starred
+def checkGistStarred(GIST_ID):
+    url = f'{BASE_URL}/gists/{GIST_ID}/star'
+    headers = {
+        # 'Content-Type': 'application/json',
+        # 'Accept': 'application/json',
+        'Content-Length': 0,
+        'Authorization': 'token ' + TOKEN
+    }
+    req = urllib.request.Request(url, headers=headers, method='GET')
+
+    # FIXME: this call return 404 if gist unstarred, if GIST_ID is bad it also return 404, !think about it
+    try:
+        urllib.request.urlopen(req)
+    except urllib.error.HTTPError:
+        print('Unstarred (or ID is bad, check it)')
+        return
+    
+    print('Starred!')
+
+
+
+
+
+
 if __name__ == '__main__':
 
     # TODO: refactor argparse
@@ -470,6 +496,12 @@ if __name__ == '__main__':
     # https://developer.github.com/v3/gists/#unstar-a-gist
     if args.name == 'unstar':
         unstarGist(args.gist_id)
+
+    # ====== Check if a gist is starred ======
+    # https://developer.github.com/v3/gists/#check-if-a-gist-is-starred
+    if args.name == 'check':
+        checkGistStarred(args.gist_id)
+
 
 
     # FIXME: when create gist or star allready starred gist, this prints

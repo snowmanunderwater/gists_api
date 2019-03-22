@@ -25,7 +25,7 @@ API calls
 | List gist commits                 | +   | lgc            |
 | Star a gist                       | +   | star           |
 | Unstar a gist                     | +   | unstar         |
-| Check if a gist is starred        | -   |                |
+| Check if a gist is starred        | +/- | check          |
 | Fork a gist                       | -   |                |
 | List gist forks                   | -   |                |
 | Delete a gist                     | +   | delete         |
