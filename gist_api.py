@@ -7,18 +7,16 @@ import urllib
 import urllib.parse
 import urllib.request
 
-# TODO: think of what to do with the TOKEN
-with open('TOKEN', 'r') as t:
-    TOKEN = t.read()
+# TODO: think of what to do with TOKEN
+with open('TOKEN', 'r') as f:
+    TOKEN = f.read()
 
 BASE_URL = 'https://api.github.com'
-GIST_URL = 'https://gist.github.com'
 
 
 def str2bool(v):
     """
-    Function to convert posible bool values to Pythonic bools.
-    https://stackoverflow.com/questions/15008758/parsing-boolean-values-with-argparse
+    Function to convert posible bool values to Python bools.
     """
     if v.lower() in ('yes', 'true', 't', 'y', '1'):
         return True
@@ -37,7 +35,7 @@ def getSingleGist(GIST_ID):
         GIST_ID (str): gist_id.
 
     Examples:
-        >>> ./gist_api.py gist 0ba2b2a39f8f66caa5630549239f35a2
+        >>> ./gist_api.py gist 0ba2b2a39f8f66caa5630542239f35a2
         VSCode: Open directory from integrated terminal.
 
         `code -r .`
