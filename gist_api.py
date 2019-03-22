@@ -33,6 +33,9 @@ def getSingleGist(GIST_ID):
 
         `code -r .`
     """
+
+    # TODO: finalize output
+
     try:
         r = urllib.request.urlopen(f'{BASE_URL}/gists/{GIST_ID}').read()
     except urllib.error.HTTPError:
@@ -66,6 +69,9 @@ def getAllGists(USERNAME):
         URL:         https://gist.github.com/0ba2b2a39f8f66caa5630549239f35a2
         ID:          0ba2b2a39f8f66caa5630549239f35a2
     """
+
+    # TODO: finalize output
+
     try:
         r = urllib.request.urlopen(f'{BASE_URL}/users/{USERNAME}/gists').read()
     except urllib.error.HTTPError:
@@ -98,8 +104,11 @@ def createGists(files):
 
     Examples:
         >>> ./gist_api.py create file1
-        
     """
+
+    # TODO: atach files not just from the current directory
+    # TODO: add argument(flag) to choose public or privat 
+    # TODO: add argument to pass description
 
     url = 'https://api.github.com/gists'
 
@@ -136,6 +145,9 @@ def createGists(files):
 
 
 if __name__ == '__main__':
+    
+    # TODO: refactor argparse
+
     parser = argparse.ArgumentParser()
     parser.add_argument('name')
     parser.add_argument('ARG', nargs='*')  # *args
