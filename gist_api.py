@@ -19,6 +19,7 @@ with open('TOKEN', 'r') as t:
 BASE_URL = 'https://api.github.com'
 GIST_URL = 'https://gist.github.com'
 
+
 def str2bool(v):
     """
     Function to convert posible bool values to Pythonic bools.
@@ -30,6 +31,7 @@ def str2bool(v):
         return False
     else:
         raise argparse.ArgumentTypeError('Boolean value expected.')
+
 
 # ====== Get a single gist ======
 # https://developer.github.com/v3/gists/#get-a-single-gist
@@ -149,7 +151,8 @@ def createGist(files, desc, public):
     }
 
     # now do the request for a url
-    req = urllib.request.Request(url, post_data, headers, method='POST')
+    req = urllib.request.Request(
+        url, data=post_data, headers=headers, method='POST')
 
     # send the request
     res = urllib.request.urlopen(req)
@@ -189,7 +192,8 @@ def editGist(id, desc, files):
     }
 
     # now do the request for a url
-    req = urllib.request.Request(url, post_data, headers, method='PATCH')
+    req = urllib.request.Request(
+        url, data=post_data, headers=headers, method='PATCH')
 
     # send the request
     res = urllib.request.urlopen(req)
@@ -197,6 +201,24 @@ def editGist(id, desc, files):
     if res.code == 200:
         print('Gist edited!')
 
+
+# ====== Delete a gist ======
+# https://developer.github.com/v3/gists/#delete-a-gist
+def deleteGist(GIST_ID):
+    url = f'{BASE_URL}/gists/{GIST_ID}'
+
+    headers = {'Authorization': 'token ' + TOKEN}
+
+    req = urllib.request.Request(url, headers=headers, method='DELETE')
+
+    try:
+        res = urllib.request.urlopen(req)
+    except urllib.error.HTTPError:
+        print('ERROR: GIST_ID IS BAD')
+        return
+
+    if res.code == 204:
+        print('Gist deleted!')
 
 
 if __name__ == '__main__':
@@ -208,11 +230,20 @@ if __name__ == '__main__':
     parser.add_argument('-id', '--gist_id', type=str, help='Gist ID')
     parser.add_argument('-u', '--username', type=str, help='Name of user')
     parser.add_argument('-f', '--files', nargs='*', help='Path to files')
-    parser.add_argument('-d', '--description', type=str, default='', help='A descriptive name for this gist.')
-    parser.add_argument('-p', '--public', type=str, default='yes', help='Gist status(public or private). Default is Public')
+    parser.add_argument(
+        '-d',
+        '--description',
+        type=str,
+        default='',
+        help='A descriptive name for this gist.')
+    parser.add_argument(
+        '-p',
+        '--public',
+        type=str,
+        default='yes',
+        help='Gist status(public or private). Default is Public')
 
     args = parser.parse_args()
-
 
     # ====== Get a single gist ======
     # https://developer.github.com/v3/gists/#get-a-single-gist
@@ -231,7 +262,7 @@ if __name__ == '__main__':
             if not os.path.isfile(file):
                 raise Exception(f"{file} IS NOT A FILE")
         createGist(args.files, args.description, args.public)
-    
+
     # ====== Edit a gist ======
     # https://developer.github.com/v3/gists/#edit-a-gist
     if args.name == 'edit':
@@ -240,11 +271,13 @@ if __name__ == '__main__':
                 raise Exception(f"{file} IS NOT A FILE")
         editGist(args.gist_id, args.description, args.files)
 
+    # ====== Delete a gist ======
+    # https://developer.github.com/v3/gists/#delete-a-gist
+    if args.name == 'delete':
+        deleteGist(args.gist_id)
 
+    # FIXME: when create gist, this prints
     else:
         print(
             f"""gist_api: {args.name} is not a gist_api command. See 'gist_api --help'."""
         )
-
-
-
