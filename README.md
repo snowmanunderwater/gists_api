@@ -7,8 +7,7 @@ Features
 * Just one file
 * Python 3.6 support
 * 0 dependencies, vanilla Python 3
-* 7/14 oficial GitHub API calls with parameters
-* Customisation options
+* 7/14 GitHub API calls with parameters
 
 
 API calls
@@ -20,12 +19,12 @@ API calls
 | List all public gists             | +   | lp             |
 | List starred gists                | +   | starred        |
 | Get a single gist                 | +   | gist           |
-| Get a specific revision of a gist | -   |                |
+| Get a specific revision of a gist | +/- | srg            |
 | Create a gist                     | +   | create         |
 | Edit a gist                       | +   | edit           |
-| List gist commits                 | -   |                |
-| Star a gist                       | -   |                |
-| Unstar a gist                     | -   |                |
+| List gist commits                 | +   | lgc            |
+| Star a gist                       | +   | star           |
+| Unstar a gist                     | +   | unstar         |
 | Check if a gist is starred        | -   |                |
 | Fork a gist                       | -   |                |
 | List gist forks                   | -   |                |
@@ -38,6 +37,7 @@ Installation
 It's just one file, common.
 
 **BUT** to date, if you want use calls that required authentication, you must put your GitHub token in file called 'TOKEN'.
+
 I am thinking of improvement.
 
 

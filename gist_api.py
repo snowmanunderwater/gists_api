@@ -101,10 +101,14 @@ def getAllGists(USERNAME):
         html_url = item.get('html_url')
         raw_url = item.get('files').get(name).get('raw_url')
         gist_description = item.get('description')
+        comments = item.get('comments')
+
         print(f'=== {count} of {all_gists} ===')
-        print(
-            f'Name:        {name}\nDescription: {gist_description}\nURL:         {html_url}\nID:          {gist_id}'
-        )
+        print(f'Name:        {name}')
+        print(f'Description: {gist_description}')
+        print(f'URL:         {html_url}')
+        print(f'ID:          {gist_id}')
+        print(f'Comments:    {comments}')
         count += 1
 
 
@@ -277,6 +281,98 @@ def listStarredGists(since):
         print('===================')
 
 
+# ====== Get a specific revision of a gist ======
+# https://developer.github.com/v3/gists/#get-a-specific-revision-of-a-gist
+def specificRevisionOfAGist(GIST_ID, SHA):
+
+    # FIXME: SHA don't work, at to date work like list gist
+
+    try:
+        r = urllib.request.urlopen(f'{BASE_URL}/gists/{GIST_ID}').read()
+    except urllib.error.HTTPError:
+        print('ERROR: GIST_ID OR SHA IS BAD')
+        return
+
+    cont = json.loads(r.decode('utf-8'))
+
+    print(cont)
+
+
+# ====== List gist commits ======
+# https://developer.github.com/v3/gists/#list-gist-commits
+def listGistCommits(GIST_ID):
+
+    # TODO: Implement since
+    # TODO: Add option selection
+    
+    url = f'{BASE_URL}/gists/{GIST_ID}/commits'
+    req = urllib.request.Request(url, method='GET')
+
+    try:
+        res = urllib.request.urlopen(req).read()
+    except urllib.error.HTTPError:
+        print('ERROR: GIST_ID IS BAD')
+        return
+
+    commits = json.loads(res.decode('utf-8'))
+    for commit in commits:
+        commit_url = commit.get('url')
+        commit_version = commit.get('version')
+        commit_user = commit.get('user').get('login')
+        commit_change_deletions = commit.get('change_status').get('deletions')
+        commit_change_additions = commit.get('change_status').get('additions')
+        commit_change_total = commit.get('change_status').get('total')
+        committed_at = commit.get('committed_at')
+
+        print('commit_url              : ', commit_url)   
+        print('commit_version          : ', commit_version)       
+        print('commit_user             : ', commit_user)    
+        print('commit_change_deletions : ', commit_change_deletions)                
+        print('commit_change_additions : ', commit_change_additions)                
+        print('commit_change_total     : ', commit_change_total)            
+        print('committed_at            : ', committed_at)     
+        print('===================')
+
+
+# ====== Star a gist ======
+# https://developer.github.com/v3/gists/#star-a-gist
+def starGist(GIST_ID):
+    url = f'{BASE_URL}/gists/{GIST_ID}/star'
+    headers = {
+        'Authorization': 'token ' + TOKEN,
+        'Content-Length': 0
+    }
+    req = urllib.request.Request(url, headers=headers, method='PUT')
+
+    try:
+        res = urllib.request.urlopen(req)
+    except urllib.error.HTTPError:
+        print('ERROR: GIST_ID IS BAD')
+        return 
+    
+    if res.code == 204:
+        print('Starred!')
+
+
+# ====== Unstar a gist ======
+# https://developer.github.com/v3/gists/#unstar-a-gist
+def unstarGist(GIST_ID):
+    url = f'{BASE_URL}/gists/{GIST_ID}/star'
+    headers = {
+        'Authorization': 'token ' + TOKEN,
+    }
+    req = urllib.request.Request(url, headers=headers, method='DELETE')
+
+    try:
+        res = urllib.request.urlopen(req)
+    except urllib.error.HTTPError:
+        print('ERROR: GIST_ID IS BAD')
+        return 
+    
+    if res.code == 204:
+        print('Unstarred!')
+
+
 if __name__ == '__main__':
 
     # TODO: refactor argparse
@@ -309,6 +405,8 @@ if __name__ == '__main__':
         '-pg', '--page', type=int, default='1', help='Paginator: page')
     parser.add_argument(
         '-pp', '--per_page', type=int, default='3', help='Paginator: per page')
+    parser.add_argument(
+        '-sha', '--sha', type=str, default='', help='SHA of gist commit')
 
     args = parser.parse_args()
 
@@ -353,7 +451,28 @@ if __name__ == '__main__':
     if args.name == 'starred':
         listStarredGists(args.since)
 
-    # FIXME: when create gist, this prints
+    # ====== Get a specific revision of a gist ======
+    # https://developer.github.com/v3/gists/#get-a-specific-revision-of-a-gist
+    if args.name == 'srg':
+        specificRevisionOfAGist(args.gist_id, args.sha)
+
+    # ====== List gist commits ======
+    # https://developer.github.com/v3/gists/#list-gist-commits
+    if args.name == 'lgc':
+        listGistCommits(args.gist_id)
+
+    # ====== Star a gist ======
+    # https://developer.github.com/v3/gists/#star-a-gist
+    if args.name == 'star':
+        starGist(args.gist_id)
+
+    # ====== Unstar a gist ======
+    # https://developer.github.com/v3/gists/#unstar-a-gist
+    if args.name == 'unstar':
+        unstarGist(args.gist_id)
+
+
+    # FIXME: when create gist or star allready starred gist, this prints
     else:
         print(
             f"""gist_api: {args.name} is not a gist_api command. See 'gist_api --help'."""
