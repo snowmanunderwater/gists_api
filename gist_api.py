@@ -221,6 +221,28 @@ def deleteGist(GIST_ID):
         print('Gist deleted!')
 
 
+# ====== List all public gists ======
+# https://developer.github.com/v3/gists/#list-all-public-gists
+def listPublicGists(since, page, per_page):
+    
+    r = urllib.request.urlopen(f'{BASE_URL}/gists/public?page={page}&per_page={per_page}').read()
+    gists = json.loads(r.decode('utf-8'))
+
+    for gist in gists:
+        gist_id = gist.get('id')
+        gist_url = gist.get('html_url')
+        gist_description = gist.get('description')
+        gist_files = list(gist.get('files'))
+        gist_owner = gist.get('owner').get('login')
+        
+        print('id:    ', gist_id)
+        print('url:   ', gist_url)
+        print('desc:  ', gist_description)
+        print('files: ', gist_files)
+        print('owner: ', gist_owner)
+        print('===================')
+
+
 if __name__ == '__main__':
 
     # TODO: refactor argparse
@@ -242,6 +264,9 @@ if __name__ == '__main__':
         type=str,
         default='yes',
         help='Gist status(public or private). Default is Public')
+    parser.add_argument('-s', '--since', type=str, help='This is a timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ. Only gists updated at or after this time are returned.')
+    parser.add_argument('-pg', '--page', type=int, default='1', help='Paginator: page')
+    parser.add_argument('-pp', '--per_page', type=int, default='3', help='Paginator: per page')
 
     args = parser.parse_args()
 
@@ -275,6 +300,12 @@ if __name__ == '__main__':
     # https://developer.github.com/v3/gists/#delete-a-gist
     if args.name == 'delete':
         deleteGist(args.gist_id)
+
+    # ====== List all public gists ======
+    # https://developer.github.com/v3/gists/#list-all-public-gists
+    if args.name == 'lp':
+        listPublicGists(args.since, args.page, args.per_page)
+
 
     # FIXME: when create gist, this prints
     else:

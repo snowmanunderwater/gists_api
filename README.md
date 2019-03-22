@@ -5,7 +5,7 @@
 | API                               | Y\N | Implementation | Comment |
 |-----------------------------------|-----|----------------|---------|
 | List a user's gists               | +   | list           |         |
-| List all public gists             | -   |                |         |
+| List all public gists             | +   | lp             |         |
 | List starred gists                | -   |                |         |
 | Get a single gist                 | +   | gist           |         |
 | Get a specific revision of a gist | -   |                |         |
@@ -18,4 +18,3 @@
 | Fork a gist                       | -   |                |         |
 | List gist forks                   | -   |                |         |
 | Delete a gist                     | +   | delete         |         |
-| Custom media types                | -   |                |         |
