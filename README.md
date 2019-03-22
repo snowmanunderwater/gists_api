@@ -17,5 +17,5 @@
 | Check if a gist is starred        | -   |                |         |
 | Fork a gist                       | -   |                |         |
 | List gist forks                   | -   |                |         |
-| Delete a gist                     | -   |                |         |
+| Delete a gist                     | +   | delete         |         |
 | Custom media types                | -   |                |         |
