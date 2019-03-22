@@ -1,13 +1,8 @@
 #!/usr/bin/python3
 
 import argparse
-import http.client
 import json
 import os.path
-import re
-import shlex
-import subprocess
-import sys
 import urllib
 import urllib.parse
 import urllib.request
@@ -64,7 +59,12 @@ def getSingleGist(GIST_ID):
     gist_description = cont.get('description')
     gist_content = list(cont.get('files').values())[0].get('content')
 
-    print(gist_content)
+    print('gist_id: ', gist_id)
+    print('gist_url: ', gist_url)
+    print('gist_files: ', gist_files)
+    print('gist_description: ', gist_description)
+    print('gist_content: ', gist_content)
+    print('===================')
 
 
 # ====== List a user's gists ======
@@ -99,7 +99,6 @@ def getAllGists(USERNAME):
         name = list(item.get('files').keys())[0]
         gist_id = item.get('id')
         html_url = item.get('html_url')
-        raw_url = item.get('files').get(name).get('raw_url')
         gist_description = item.get('description')
         comments = item.get('comments')
 
@@ -304,7 +303,7 @@ def listGistCommits(GIST_ID):
 
     # TODO: Implement since
     # TODO: Add option selection
-    
+
     url = f'{BASE_URL}/gists/{GIST_ID}/commits'
     req = urllib.request.Request(url, method='GET')
 
@@ -324,13 +323,13 @@ def listGistCommits(GIST_ID):
         commit_change_total = commit.get('change_status').get('total')
         committed_at = commit.get('committed_at')
 
-        print('commit_url              : ', commit_url)   
-        print('commit_version          : ', commit_version)       
-        print('commit_user             : ', commit_user)    
-        print('commit_change_deletions : ', commit_change_deletions)                
-        print('commit_change_additions : ', commit_change_additions)                
-        print('commit_change_total     : ', commit_change_total)            
-        print('committed_at            : ', committed_at)     
+        print('commit_url              : ', commit_url)
+        print('commit_version          : ', commit_version)
+        print('commit_user             : ', commit_user)
+        print('commit_change_deletions : ', commit_change_deletions)
+        print('commit_change_additions : ', commit_change_additions)
+        print('commit_change_total     : ', commit_change_total)
+        print('committed_at            : ', committed_at)
         print('===================')
 
 
@@ -338,18 +337,15 @@ def listGistCommits(GIST_ID):
 # https://developer.github.com/v3/gists/#star-a-gist
 def starGist(GIST_ID):
     url = f'{BASE_URL}/gists/{GIST_ID}/star'
-    headers = {
-        'Authorization': 'token ' + TOKEN,
-        'Content-Length': 0
-    }
+    headers = {'Authorization': 'token ' + TOKEN, 'Content-Length': 0}
     req = urllib.request.Request(url, headers=headers, method='PUT')
 
     try:
         res = urllib.request.urlopen(req)
     except urllib.error.HTTPError:
         print('ERROR: GIST_ID IS BAD')
-        return 
-    
+        return
+
     if res.code == 204:
         print('Starred!')
 
@@ -367,8 +363,8 @@ def unstarGist(GIST_ID):
         res = urllib.request.urlopen(req)
     except urllib.error.HTTPError:
         print('ERROR: GIST_ID IS BAD')
-        return 
-    
+        return
+
     if res.code == 204:
         print('Unstarred!')
 
@@ -395,8 +391,62 @@ def checkGistStarred(GIST_ID):
         print('Starred!')
 
 
+# ====== Fork a gist ======
+# https://developer.github.com/v3/gists/#fork-a-gist
+def forkGist(GIST_ID):
+    url = f'{BASE_URL}/gists/{GIST_ID}/forks'
+    headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'token ' + TOKEN
+    }
+    req = urllib.request.Request(url, headers=headers, method='POST')
+
+    # FIXME: this call return 404 if gist unstarred, if GIST_ID is bad it also return 404, !think about it
+    try:
+        res = urllib.request.urlopen(req)
+    except urllib.error.HTTPError:
+        print('Gist ID is BAD')
+        return
+
+    if res.code == 201:
+        print('Gist forked')
 
 
+# ====== List gist forks ======
+# https://developer.github.com/v3/gists/#list-gist-forks
+def listGistForks(GIST_ID):
+
+    # FIXME: maybe API is not working properly, instead forks it response revisions
+
+    url = f'{BASE_URL}/gists/{GIST_ID}/forks'
+    headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'token ' + TOKEN
+    }
+
+    req = urllib.request.Request(url, headers=headers, method='GET')
+    try:
+        res = urllib.request.urlopen(req).read()
+    except urllib.error.HTTPError:
+        print('Gist ID is BAD')
+        return
+
+    forks = json.loads(res.decode('utf-8'))
+    for fork in forks:
+        fork_user = fork.get('user').get('login')
+        fork_url = fork.get('url')
+        fork_id = fork.get('id')
+        fork_created_at = fork.get('created_at')
+        fork_updated_at = fork.get('updated_at')
+
+        print('fork_user      : ', fork_user)
+        print('fork_url       : ', fork_url)
+        print('fork_id        : ', fork_id)
+        print('fork_created_at: ', fork_created_at)
+        print('fork_updated_at: ', fork_updated_at)
+        print('===================')
 
 
 if __name__ == '__main__':
@@ -502,7 +552,15 @@ if __name__ == '__main__':
     if args.name == 'check':
         checkGistStarred(args.gist_id)
 
+    # ====== Fork a gist ======
+    # https://developer.github.com/v3/gists/#fork-a-gist
+    if args.name == 'fork':
+        forkGist(args.gist_id)
 
+    # ====== List gist forks ======
+    # https://developer.github.com/v3/gists/#list-gist-forks
+    if args.name == 'lgf':
+        listGistCommits(args.gist_id)
 
     # FIXME: when create gist or star allready starred gist, this prints
     else:
