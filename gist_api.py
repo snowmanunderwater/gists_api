@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 import argparse
 import json
 import os.path
@@ -33,7 +33,7 @@ def getSingleGist(GIST_ID):
         GIST_ID (str): gist_id.
 
     Examples:
-        >>> ./gist_api.py gist 0ba2b2a39f8f66caa5630542239f35a2
+        >>> ./gist_api.py gist -id 267e88c1e7a145a88f8323898f1d6c62
         VSCode: Open directory from integrated terminal.
 
         `code -r .`
@@ -41,26 +41,26 @@ def getSingleGist(GIST_ID):
 
     # TODO: Add option selection
 
+    url = f'{BASE_URL}/gists/{GIST_ID}'
+    req = urllib.request.Request(url, method='GET')
     try:
-        r = urllib.request.urlopen(f'{BASE_URL}/gists/{GIST_ID}').read()
-    except urllib.error.HTTPError:
-        print('ERROR: GIST_ID IS BAD')
-        return
+        res = urllib.request.urlopen(req).read()
+    except urllib.error.HTTPError as e:
+        print(e)
+    else:
+        cont = json.loads(res.decode('utf-8'))
 
-    cont = json.loads(r.decode('utf-8'))
+        gist_id = cont.get('id')
+        gist_url = cont.get('html_url')
+        gist_files = list(cont.get('files'))
+        gist_description = cont.get('description')
+        gist_content = list(cont.get('files').values())[0].get('content')
 
-    gist_id = cont.get('id')
-    gist_url = cont.get('html_url')
-    gist_files = list(cont.get('files'))
-    gist_description = cont.get('description')
-    gist_content = list(cont.get('files').values())[0].get('content')
-
-    print('gist_id: ', gist_id)
-    print('gist_url: ', gist_url)
-    print('gist_files: ', gist_files)
-    print('gist_description: ', gist_description)
-    print('gist_content: ', gist_content)
-    print('===================')
+        print('gist_id:          ', gist_id)
+        print('gist_url:         ', gist_url)
+        print('gist_files:       ', gist_files)
+        print('gist_description: ', gist_description)
+        print('gist_content:   \n', gist_content)
 
 
 def getAllGists(USERNAME):
@@ -82,30 +82,30 @@ def getAllGists(USERNAME):
     """
 
     # TODO: Add option selection
-
+    url = f'{BASE_URL}/users/{USERNAME}/gists'
+    req = urllib.request.Request(url, method='GET')
     try:
-        r = urllib.request.urlopen(f'{BASE_URL}/users/{USERNAME}/gists').read()
-    except urllib.error.HTTPError:
-        print('ERROR: USERNAME IS BAD')
-        return
+        res = urllib.request.urlopen(req).read()
+    except urllib.error.HTTPError as e:
+        print(e)
+    else:
+        cont = json.loads(res.decode('utf-8'))
+        all_gists = len(cont)
+        count = 1
+        for item in cont:
+            name = list(item.get('files').keys())[0]
+            gist_id = item.get('id')
+            html_url = item.get('html_url')
+            gist_description = item.get('description')
+            comments = item.get('comments')
 
-    cont = json.loads(r.decode('utf-8'))
-    all_gists = len(cont)
-    count = 1
-    for item in cont:
-        name = list(item.get('files').keys())[0]
-        gist_id = item.get('id')
-        html_url = item.get('html_url')
-        gist_description = item.get('description')
-        comments = item.get('comments')
-
-        print(f'=== {count} of {all_gists} ===')
-        print(f'Name:        {name}')
-        print(f'Description: {gist_description}')
-        print(f'URL:         {html_url}')
-        print(f'ID:          {gist_id}')
-        print(f'Comments:    {comments}')
-        count += 1
+            print(f'=== {count} of {all_gists} ===')
+            print(f'Name:        {name}')
+            print(f'Description: {gist_description}')
+            print(f'URL:         {html_url}')
+            print(f'ID:          {gist_id}')
+            print(f'Comments:    {comments}')
+            count += 1
 
 
 def createGist(files, desc, public):
@@ -196,10 +196,9 @@ def deleteGist(GIST_ID):
 
     try:
         res = urllib.request.urlopen(req)
-    except urllib.error.HTTPError:
-        print('ERROR: GIST_ID IS BAD')
-        return
-
+    except urllib.error.HTTPError as e:
+        print(e)
+    
     if res.code == 204:
         print('Gist deleted!')
 
@@ -209,26 +208,30 @@ def listPublicGists(since, page, per_page):
     # TODO: Implement since
     # TODO: Add option selection
 
-    r = urllib.request.urlopen(
-        f'{BASE_URL}/gists/public?page={page}&per_page={per_page}').read()
-    gists = json.loads(r.decode('utf-8'))
+    url = f'{BASE_URL}/gists/public?page={page}&per_page={per_page}'
+    req = urllib.request.Request(url, method='GET')
+    try:
+        res = urllib.request.urlopen(req).read()
+    except urllib.error.HTTPError as e:
+        print(e)
+    else:
+        gists = json.loads(res.decode('utf-8'))
 
-    for gist in gists:
-        gist_id = gist.get('id')
-        gist_url = gist.get('html_url')
-        gist_description = gist.get('description')
-        gist_files = list(gist.get('files'))
-        gist_owner = gist.get('owner').get('login')
-        gist_comments = gist.get('comments')
+        for gist in gists:
+            gist_id = gist.get('id')
+            gist_url = gist.get('html_url')
+            gist_description = gist.get('description')
+            gist_files = list(gist.get('files'))
+            gist_owner = gist.get('owner').get('login')
+            gist_comments = gist.get('comments')
 
-        print('id:    ', gist_id)
-        print('url:   ', gist_url)
-        print('desc:  ', gist_description)
-        print('files: ', gist_files)
-        print('owner: ', gist_owner)
-        print('comments: ', gist_comments)
-        print('===================')
-
+            print('id:    ', gist_id)
+            print('url:   ', gist_url)
+            print('desc:  ', gist_description)
+            print('files: ', gist_files)
+            print('owner: ', gist_owner)
+            print('comments: ', gist_comments)
+            print('===================')
 
 
 def listStarredGists(since):
@@ -239,37 +242,39 @@ def listStarredGists(since):
     url = f'{BASE_URL}/gists/starred'
     headers = {'Authorization': 'token ' + TOKEN}
     req = urllib.request.Request(url, headers=headers, method='GET')
-    res = urllib.request.urlopen(req).read()
+    try:
+        res = urllib.request.urlopen(req).read()
+    except urllib.error.HTTPError as e:
+        print(e)
+    else:
+        gists = json.loads(res.decode('utf-8'))
+        for gist in gists:
+            gist_id = gist.get('id')
+            gist_url = gist.get('html_url')
+            gist_description = gist.get('description')
+            gist_files = list(gist.get('files'))
+            gist_comments = gist.get('comments')
 
-    gists = json.loads(res.decode('utf-8'))
-    for gist in gists:
-        gist_id = gist.get('id')
-        gist_url = gist.get('html_url')
-        gist_description = gist.get('description')
-        gist_files = list(gist.get('files'))
-        gist_comments = gist.get('comments')
-
-        print('id:       ', gist_id)
-        print('url:      ', gist_url)
-        print('desc:     ', gist_description)
-        print('files:    ', gist_files)
-        print('comments: ', gist_comments)
-        print('===================')
+            print('id:       ', gist_id)
+            print('url:      ', gist_url)
+            print('desc:     ', gist_description)
+            print('files:    ', gist_files)
+            print('comments: ', gist_comments)
+            print('===================')
 
 
 def specificRevisionOfAGist(GIST_ID, SHA):
     # https://developer.github.com/v3/gists/#get-a-specific-revision-of-a-gist
     # FIXME: SHA don't work, at to date work like list gist
-
+    url = f'{BASE_URL}/gists/{GIST_ID}'
+    req = urllib.request.Request(url, method='GET')
     try:
-        r = urllib.request.urlopen(f'{BASE_URL}/gists/{GIST_ID}').read()
-    except urllib.error.HTTPError:
-        print('ERROR: GIST_ID OR SHA IS BAD')
-        return
-
-    cont = json.loads(r.decode('utf-8'))
-
-    print(cont)
+        res = urllib.request.urlopen(req).read()
+    except urllib.error.HTTPError as e:
+        print(e)
+    else:
+        cont = json.loads(res.decode('utf-8'))
+        print(cont)
 
 
 def listGistCommits(GIST_ID):
@@ -279,31 +284,29 @@ def listGistCommits(GIST_ID):
 
     url = f'{BASE_URL}/gists/{GIST_ID}/commits'
     req = urllib.request.Request(url, method='GET')
-
     try:
         res = urllib.request.urlopen(req).read()
-    except urllib.error.HTTPError:
-        print('ERROR: GIST_ID IS BAD')
-        return
+    except urllib.error.HTTPError as e:
+        print(e)
+    else:
+        commits = json.loads(res.decode('utf-8'))
+        for commit in commits:
+            commit_url = commit.get('url')
+            commit_version = commit.get('version')
+            commit_user = commit.get('user').get('login')
+            commit_change_deletions = commit.get('change_status').get('deletions')
+            commit_change_additions = commit.get('change_status').get('additions')
+            commit_change_total = commit.get('change_status').get('total')
+            committed_at = commit.get('committed_at')
 
-    commits = json.loads(res.decode('utf-8'))
-    for commit in commits:
-        commit_url = commit.get('url')
-        commit_version = commit.get('version')
-        commit_user = commit.get('user').get('login')
-        commit_change_deletions = commit.get('change_status').get('deletions')
-        commit_change_additions = commit.get('change_status').get('additions')
-        commit_change_total = commit.get('change_status').get('total')
-        committed_at = commit.get('committed_at')
-
-        print('commit_url              : ', commit_url)
-        print('commit_version          : ', commit_version)
-        print('commit_user             : ', commit_user)
-        print('commit_change_deletions : ', commit_change_deletions)
-        print('commit_change_additions : ', commit_change_additions)
-        print('commit_change_total     : ', commit_change_total)
-        print('committed_at            : ', committed_at)
-        print('===================')
+            print('commit_url              : ', commit_url)
+            print('commit_version          : ', commit_version)
+            print('commit_user             : ', commit_user)
+            print('commit_change_deletions : ', commit_change_deletions)
+            print('commit_change_additions : ', commit_change_additions)
+            print('commit_change_total     : ', commit_change_total)
+            print('committed_at            : ', committed_at)
+            print('===================')
 
 
 def starGist(GIST_ID):
@@ -314,9 +317,8 @@ def starGist(GIST_ID):
 
     try:
         res = urllib.request.urlopen(req)
-    except urllib.error.HTTPError:
-        print('ERROR: GIST_ID IS BAD')
-        return
+    except urllib.error.HTTPError as e:
+        print(e)
 
     if res.code == 204:
         print('Starred!')
@@ -325,20 +327,16 @@ def starGist(GIST_ID):
 def unstarGist(GIST_ID):
     # https://developer.github.com/v3/gists/#unstar-a-gist
     url = f'{BASE_URL}/gists/{GIST_ID}/star'
-    headers = {
-        'Authorization': 'token ' + TOKEN,
-    }
+    headers = {'Authorization': 'token ' + TOKEN}
     req = urllib.request.Request(url, headers=headers, method='DELETE')
 
     try:
         res = urllib.request.urlopen(req)
-    except urllib.error.HTTPError:
-        print('ERROR: GIST_ID IS BAD')
-        return
+    except urllib.error.HTTPError as e:
+        print(e)
 
     if res.code == 204:
         print('Unstarred!')
-
 
 
 def checkGistStarred(GIST_ID):
@@ -359,9 +357,9 @@ def checkGistStarred(GIST_ID):
     else:
         print('Starred!')
 
-
 def forkGist(GIST_ID):
     # https://developer.github.com/v3/gists/#fork-a-gist
+    
     url = f'{BASE_URL}/gists/{GIST_ID}/forks'
     headers = {
         'Content-Type': 'application/json',
@@ -391,8 +389,8 @@ def listGistForks(GIST_ID):
         'Accept': 'application/json',
         'Authorization': 'token ' + TOKEN
     }
-
     req = urllib.request.Request(url, headers=headers, method='GET')
+
     try:
         res = urllib.request.urlopen(req).read()
     except urllib.error.HTTPError:
@@ -415,8 +413,7 @@ def listGistForks(GIST_ID):
         print('===================')
 
 
-if __name__ == '__main__':
-
+def main():
     parser = argparse.ArgumentParser(description='Github Gists CLI')
     parser.add_argument('name', type=str, help='Name of method')
     parser.add_argument('-id', '--gist_id', type=str, help='Gist ID')
@@ -443,53 +440,57 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.name == 'gist':
-        getSingleGist(args.gist_id)
+        return getSingleGist(args.gist_id)
 
     if args.name == 'list':
-        getAllGists(args.username)
+        return getAllGists(args.username)
 
     if args.name == 'create':
         for file in args.files:
             if not os.path.isfile(file):
                 raise Exception(f"{file} IS NOT A FILE")
-        createGist(args.files, args.description, args.public)
+        return createGist(args.files, args.description, args.public)
 
     if args.name == 'edit':
         for file in args.files:
             if not os.path.isfile(file):
                 raise Exception(f"{file} IS NOT A FILE")
-        editGist(args.gist_id, args.description, args.files)
+        return editGist(args.gist_id, args.description, args.files)
 
     if args.name == 'delete':
-        deleteGist(args.gist_id)
+        return deleteGist(args.gist_id)
 
     if args.name == 'lp':
-        listPublicGists(args.since, args.page, args.per_page)
+        return listPublicGists(args.since, args.page, args.per_page)
 
     if args.name == 'starred':
-        listStarredGists(args.since)
+        return listStarredGists(args.since)
 
     if args.name == 'srg':
-        specificRevisionOfAGist(args.gist_id, args.sha)
+        return specificRevisionOfAGist(args.gist_id, args.sha)
 
     if args.name == 'lgc':
-        listGistCommits(args.gist_id)
+        return listGistCommits(args.gist_id)
 
     if args.name == 'star':
-        starGist(args.gist_id)
+        return starGist(args.gist_id)
 
     if args.name == 'unstar':
-        unstarGist(args.gist_id)
+        return unstarGist(args.gist_id)
 
     if args.name == 'check':
-        checkGistStarred(args.gist_id)
+        return checkGistStarred(args.gist_id)
 
     if args.name == 'fork':
-        forkGist(args.gist_id)
+        return forkGist(args.gist_id)
 
     if args.name == 'lgf':
-        listGistCommits(args.gist_id)
+        return listGistCommits(args.gist_id)
 
     # FIXME: when create gist or star allready starred gist, this prints
     else:
         print(f"gist_api: {args.name} is not a gist_api command. See 'gist_api -h'.")
+
+if __name__ == '__main__':
+    main()
+    
