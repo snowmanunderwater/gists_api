@@ -1,33 +1,33 @@
-# gist_api: a CLI Github Gists API
+# gist_api: Github Gists CLI tool
+
 
 
 Features
 --------
 
-* Just one file
-* Python 3.6 support
+* Single file
 * 0 dependencies, vanilla Python 3
 
 
 API calls
 ---------
 
-| API                               | Implement? | Command        |
-|-----------------------------------|------------|----------------|
-| List a user's gists               | +          | list           |
-| List all public gists             | +          | lp             |
-| List starred gists                | +          | starred        |
-| Get a single gist                 | +          | gist           |
-| Get a specific revision of a gist | +/-        | srg            |
-| Create a gist                     | +          | create         |
-| Edit a gist                       | +          | edit           |
-| List gist commits                 | +          | lgc            |
-| Star a gist                       | +          | star           |
-| Unstar a gist                     | +          | unstar         |
-| Check if a gist is starred        | +/-        | check          |
-| Fork a gist                       | +          | fork           |
-| List gist forks                   | +          | lgf            |
-| Delete a gist                     | +          | delete         |
+| Command        | API                               | Arguments        |  Implement? |
+|----------------|-----------------------------------|------------------|-------------|
+| list           | List a specific user's gists      | -u               |  +          |
+| lp             | List all public gists             | -s, -pp -pg      |  +          |
+| starred        | List starred gists                | -s               |  +          |
+| gist           | Get a single gist                 | -id              |  +          |
+| srg            | Get a specific revision of a gist | -id, -sha        |  +/-        |
+| create         | Create a gist                     | -f, -d, -p       |  +          |
+| edit           | Edit a gist                       | -id, -f, -d      |  +/-        |
+| lgc            | List gist commits                 | -id              |  +          |
+| star           | Star a gist                       | -id              |  +          |
+| unstar         | Unstar a gist                     | -id              |  +          |
+| check          | Check if a gist is starred        | -id              |  +/-        |
+| fork           | Fork a gist                       | -id              |  +          |
+| lgf            | List gist forks                   | -id              |  +          |
+| delete         | Delete a gist                     | -id              |  +          |
 
 
 Installation
@@ -35,7 +35,7 @@ Installation
 
 It's just one file, common.
 
-**BUT** to date, if you want use calls that required authentication, you must put your GitHub token in file called 'TOKEN'.
+**BUT** to date, if you want to use calls that required authentication, you must put your GitHub token in file called 'TOKEN'.
 
 I am thinking of improvement.
 
@@ -43,19 +43,68 @@ I am thinking of improvement.
 Examples
 --------
 
-* List all gists of the specified user.
+- **List all gists of the specified user:**
 
-![list](https://github.com/snowmanunderwater/gists_api/blob/master/screenshots/list.png)
+```
+$ python3 gist_api.py list -u snowmanunderwater
 
-* Create gist.
+=== 1 of 5 ===
+Name:        linux_tips.md
+Description: Tips
+URL:         https://gist.github.com/0ba2b2a39f8f66caa563054
+9239f35a2
+ID:          0ba2b2a39f8f66caa5630549239f35a2
+Comments:    0
+=== 2 of 5 ===
+Name:        gistfile1.txt
+Description: Find missing number in sequences
+URL:         https://gist.github.com/923d6669c298f3ffa847b15fa621403b
+ID:          923d6669c298f3ffa847b15fa621403b
+Comments:    0
+=== 3 of 5 ===
+Name:        gistfile1.md
+Description: Ubuntu 18.04 minimal + i3-gaps
+URL:         https://gist.github.com/9674fd25e3174d3beb93c5ac85d23f96
+ID:          9674fd25e3174d3beb93c5ac85d23f96
+Comments:    0
+```
 
-![create](https://github.com/snowmanunderwater/gists_api/blob/master/screenshots/create.png)
+- **Create gist:**
 
-* List public gists from all users.
+```
+$ python3 gist_api.py create -f file1 -d "desc" -p yes
 
-![list](https://github.com/snowmanunderwater/gists_api/blob/master/screenshots/list_public.png)
+Gist created!
+```
 
 
+- **List public gists from all users:**
+
+```
+$ python3 gist_api.py lp -pp 3
+
+=== 1 of 3 ===
+id:     80904e1c20b1a5805ceff3f97bd7cbe8
+url:    https://gist.github.com/80904e1c20b1a5805ceff3f97bd7cbe8
+desc:
+files:  ['flairdata_de.txt']
+owner:  individual8
+comments:  0
+=== 2 of 3 ===
+id:     ac06a4bd2f032b965f0b40812ebb42cd
+url:    https://gist.github.com/ac06a4bd2f032b965f0b40812ebb42cd
+desc:   wordpress docker_compose
+files:  ['docker-compose.yml']
+owner:  nc30
+comments:  0
+=== 3 of 3 ===
+id:     06a04c1122ae1b607f1e6ed69161d254
+url:    https://gist.github.com/06a04c1122ae1b607f1e6ed69161d254
+desc:   combs
+files:  ['combs.rb']
+owner:  lbvf50mobile
+comments:  0
+```
 
 
 Help

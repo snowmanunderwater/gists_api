@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+
 import argparse
 import json
 import os.path
@@ -84,28 +85,27 @@ def getAllGists(USERNAME):
     # TODO: Add option selection
     url = f'{BASE_URL}/users/{USERNAME}/gists'
     req = urllib.request.Request(url, method='GET')
+
     try:
         res = urllib.request.urlopen(req).read()
     except urllib.error.HTTPError as e:
         print(e)
     else:
-        cont = json.loads(res.decode('utf-8'))
-        all_gists = len(cont)
-        count = 1
-        for item in cont:
+        gists = json.loads(res.decode('utf-8'))
+
+        for count, item in enumerate(gists):
             name = list(item.get('files').keys())[0]
             gist_id = item.get('id')
             html_url = item.get('html_url')
             gist_description = item.get('description')
             comments = item.get('comments')
 
-            print(f'=== {count} of {all_gists} ===')
+            print(f'=== {count+1} of {len(gists)} ===')
             print(f'Name:        {name}')
             print(f'Description: {gist_description}')
             print(f'URL:         {html_url}')
             print(f'ID:          {gist_id}')
             print(f'Comments:    {comments}')
-            count += 1
 
 
 def createGist(files, desc, public):
@@ -217,7 +217,7 @@ def listPublicGists(since, page, per_page):
     else:
         gists = json.loads(res.decode('utf-8'))
 
-        for gist in gists:
+        for count, gist in enumerate(gists):
             gist_id = gist.get('id')
             gist_url = gist.get('html_url')
             gist_description = gist.get('description')
@@ -225,13 +225,13 @@ def listPublicGists(since, page, per_page):
             gist_owner = gist.get('owner').get('login')
             gist_comments = gist.get('comments')
 
+            print(f'=== {count+1} of {len(gists)} ===')
             print('id:    ', gist_id)
             print('url:   ', gist_url)
             print('desc:  ', gist_description)
             print('files: ', gist_files)
             print('owner: ', gist_owner)
             print('comments: ', gist_comments)
-            print('===================')
 
 
 def listStarredGists(since):
@@ -242,30 +242,32 @@ def listStarredGists(since):
     url = f'{BASE_URL}/gists/starred'
     headers = {'Authorization': 'token ' + TOKEN}
     req = urllib.request.Request(url, headers=headers, method='GET')
+    
     try:
         res = urllib.request.urlopen(req).read()
     except urllib.error.HTTPError as e:
         print(e)
     else:
         gists = json.loads(res.decode('utf-8'))
-        for gist in gists:
+        
+        for count, gist in enumerate(gists):
             gist_id = gist.get('id')
             gist_url = gist.get('html_url')
             gist_description = gist.get('description')
             gist_files = list(gist.get('files'))
             gist_comments = gist.get('comments')
 
+            print(f'=== {count+1} of {len(gists)} ===')
             print('id:       ', gist_id)
             print('url:      ', gist_url)
             print('desc:     ', gist_description)
             print('files:    ', gist_files)
             print('comments: ', gist_comments)
-            print('===================')
 
 
 def specificRevisionOfAGist(GIST_ID, SHA):
     # https://developer.github.com/v3/gists/#get-a-specific-revision-of-a-gist
-    # FIXME: SHA don't work, at to date work like list gist
+    # FIXME: SHA don't work, work like list gist
     url = f'{BASE_URL}/gists/{GIST_ID}'
     req = urllib.request.Request(url, method='GET')
     try:
@@ -290,7 +292,7 @@ def listGistCommits(GIST_ID):
         print(e)
     else:
         commits = json.loads(res.decode('utf-8'))
-        for commit in commits:
+        for count, commit in commits:
             commit_url = commit.get('url')
             commit_version = commit.get('version')
             commit_user = commit.get('user').get('login')
@@ -299,6 +301,7 @@ def listGistCommits(GIST_ID):
             commit_change_total = commit.get('change_status').get('total')
             committed_at = commit.get('committed_at')
 
+            print(f'=== {count+1} of {len(commits)} ===')
             print('commit_url              : ', commit_url)
             print('commit_version          : ', commit_version)
             print('commit_user             : ', commit_user)
@@ -306,7 +309,6 @@ def listGistCommits(GIST_ID):
             print('commit_change_additions : ', commit_change_additions)
             print('commit_change_total     : ', commit_change_total)
             print('committed_at            : ', committed_at)
-            print('===================')
 
 
 def starGist(GIST_ID):
